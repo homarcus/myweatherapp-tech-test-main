@@ -1,6 +1,7 @@
 package com.weatherapp.myweatherapp.controller;
 
 import com.weatherapp.myweatherapp.model.CityInfo;
+import com.weatherapp.myweatherapp.model.CompareCity;
 import com.weatherapp.myweatherapp.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,29 @@ public class WeatherController {
   }
 
   // TODO: given two city names, compare the length of the daylight hours and return the city with the longest day
+  @GetMapping("/compare/daylightHours/{city1}/{city2}")
+  public ResponseEntity<CompareCity> compareDaylightHours(
+      @PathVariable("city1") String city1,
+      @PathVariable("city2") String city2) {
+    try {
+      CompareCity result = weatherService.compareDaylightHours(city1, city2);
+      return ResponseEntity.ok(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
+  @GetMapping("/compare/rain/{city1}/{city2}")
+  public ResponseEntity<CompareCity> compareRain(
+      @PathVariable("city1") String city1,
+      @PathVariable("city2") String city2) {
+    try {
+      CompareCity result = weatherService.compareRain(city1, city2);
+      return ResponseEntity.ok(result);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().build();
+    }
+  }
 
   // TODO: given two city names, check which city its currently raining in
 

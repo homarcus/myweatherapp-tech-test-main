@@ -1,6 +1,7 @@
 package com.weatherapp.myweatherapp.repository;
 
 import com.weatherapp.myweatherapp.model.CityInfo;
+import com.weatherapp.myweatherapp.model.CompareCity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
@@ -20,4 +21,5 @@ public class VisualcrossingRepository {
     return restTemplate.getForObject(uri, CityInfo.class);
 
   }
+  
 }

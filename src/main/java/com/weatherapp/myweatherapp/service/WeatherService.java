@@ -3,6 +3,7 @@ package com.weatherapp.myweatherapp.service;
 import com.weatherapp.myweatherapp.model.CityInfo;
 import com.weatherapp.myweatherapp.model.CompareCity;
 import com.weatherapp.myweatherapp.repository.VisualcrossingRepository;
+import com.weatherapp.myweatherapp.exception.InvalidCityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalTime;
@@ -15,12 +16,32 @@ public class WeatherService {
   VisualcrossingRepository weatherRepo;
 
   public CityInfo forecastByCity(String city) {
-    return weatherRepo.getByCity(city);
+    try {
+      CityInfo cityInfo = weatherRepo.getByCity(city);
+      if (cityInfo == null || cityInfo.getCurrentConditions() == null) {
+        throw new InvalidCityException("Invalid location parameter value: " + city);
+      }
+      return cityInfo;
+    } catch (Exception e) {
+      throw new InvalidCityException("Invalid location parameter value: " + city);
+    }
   }
   
+  private CityInfo getCityInfo(String city) {
+    try {
+      CityInfo cityInfo = weatherRepo.getByCity(city);
+      if (cityInfo == null || cityInfo.getCurrentConditions() == null) {
+        throw new InvalidCityException("Invalid location parameter value: " + city);
+      }
+      return cityInfo;
+    } catch (Exception e) {
+      throw new InvalidCityException("Error fetching weather data for city: " + city);
+    }
+  }
+
   public CompareCity compareDaylightHours(String city1, String city2) {
-    CityInfo city1Info = weatherRepo.getByCity(city1);
-    CityInfo city2Info = weatherRepo.getByCity(city2);
+    CityInfo city1Info = getCityInfo(city1);
+    CityInfo city2Info = getCityInfo(city2);
 
     LocalTime sunrise1 = LocalTime.parse(city1Info.getCurrentConditions().getSunrise());
     LocalTime sunset1 = LocalTime.parse(city1Info.getCurrentConditions().getSunset());
@@ -42,8 +63,8 @@ public class WeatherService {
   }
 
   public CompareCity compareRain(String city1, String city2) {
-    CityInfo city1Info = weatherRepo.getByCity(city1);
-    CityInfo city2Info = weatherRepo.getByCity(city2);
+    CityInfo city1Info = getCityInfo(city1);
+    CityInfo city2Info = getCityInfo(city2);
 
     boolean isRaining1 = city1Info.getCurrentConditions().getConditions().toLowerCase().contains("rain");
     boolean isRaining2 = city2Info.getCurrentConditions().getConditions().toLowerCase().contains("rain");
